@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.SupportComparator
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class ArtistDecorAdapter(
@@ -61,7 +62,7 @@ class ArtistDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            artistAdapter.sort(BaseAdapter.SupportComparator.createAlphanumericComparator { it.title })
+                            artistAdapter.sort(SupportComparator.createAlphanumericComparator { it.title })
                             menuItem.isChecked = true
                             sortStatus = 0
                         }

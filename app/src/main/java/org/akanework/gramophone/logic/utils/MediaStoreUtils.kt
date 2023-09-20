@@ -276,16 +276,14 @@ object MediaStoreUtils {
         cursor?.close()
 
         // Sort all the lists/albums.
-        // TODO sort in UI
-        val sortedAlbumList: MutableList<Album> =
+        val albumList: MutableList<Album> =
             albumMap
                 .entries
                 .mapIndexed { index, (key, value) ->
                     val (albumTitle, albumYear) = key
-                    val sortedAlbumSongs = value.sortedBy { it.mediaMetadata.trackNumber }
                     val albumArtist =
-                        sortedAlbumSongs.first().mediaMetadata.albumArtist
-                            ?: sortedAlbumSongs
+                        value.first().mediaMetadata.albumArtist
+                            ?: value
                                 .first()
                                 .mediaMetadata
                                 .artist
@@ -295,57 +293,26 @@ object MediaStoreUtils {
                         albumTitle ?: context.getString(R.string.unknown_album),
                         albumArtist.toString(),
                         albumYear,
-                        sortedAlbumSongs,
+                        value,
                     )
-                }.sortedWith(compareBy({ it.title }, { it.albumYear }))
+                }
                 .toMutableList()
-        val sortedArtistList: MutableList<Artist> =
-            artistMap
-                .entries
-                .mapIndexed { index, (artistName, songsByArtist) ->
-                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
-                    Artist(index.toLong(), artistName, sortedArtistSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedAlbumArtistList: MutableList<Artist> =
-            albumArtistMap
-                .entries
-                .mapIndexed { index, (artistName, songsByArtist) ->
-                    val sortedArtistSongs = songsByArtist.sortedBy { it.mediaMetadata.title.toString() }
-                    Artist(index.toLong(), artistName, sortedArtistSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedGenreList: MutableList<Genre> =
-            genreMap
-                .entries
-                .mapIndexed { index, (genreTitle, songsByGenre) ->
-                    val sortedGenreSongs = songsByGenre.sortedBy { it.mediaMetadata.title.toString() }
-                    Genre(index.toLong(), genreTitle!!, sortedGenreSongs)
-                }.sortedBy { it.title }
-                .toMutableList()
-        val sortedDateList: MutableList<Date> =
-            dateMap
-                .entries
-                .mapIndexed { index, (year, songsByYear) ->
-                    val sortedDateSongs = songsByYear.sortedBy { it.mediaMetadata.title.toString() }
-                    Date(index.toLong(), year.toString(), sortedDateSongs)
-                }.sortedByDescending { it.title }
-                .toMutableList()
-
-        val playlistList = getPlaylists(context, songs)
-            .sortedByDescending { it.title }.toMutableList()
 
         return LibraryStoreClass(
             songs,
-            sortedAlbumList,
-            sortedAlbumArtistList,
-            sortedArtistList,
-            sortedGenreList,
-            sortedDateList,
+            albumList,
+            albumArtistMap.entries.mapIndexed { index, (cat, songs) ->
+                Artist(index.toLong(), cat, songs) }.toMutableList(),
+            artistMap.entries.mapIndexed { index, (cat, songs) ->
+                Artist(index.toLong(), cat, songs) }.toMutableList(),
+            genreMap.entries.mapIndexed { index, (cat, songs) ->
+                Genre(index.toLong(), cat.toString(), songs) }.toMutableList(),
+            dateMap.entries.mapIndexed { index, (cat, songs) ->
+                Date(index.toLong(), cat.toString(), songs) }.toMutableList(),
             durationMap,
             fileUriMap,
             mimeTypeMap,
-            playlistList,
+            getPlaylists(context, songs),
             root
         )
     }

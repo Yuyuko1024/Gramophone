@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import org.akanework.gramophone.R
+import org.akanework.gramophone.logic.utils.SupportComparator
 
 class DateDecorAdapter(
     private val context: Context,
@@ -52,7 +53,8 @@ class DateDecorAdapter(
                 when (menuItem.itemId) {
                     R.id.name -> {
                         if (!menuItem.isChecked) {
-                            dateAdapter.sort(BaseAdapter.SupportComparator
+                            dateAdapter.sort(
+                                SupportComparator
                                 .createAlphanumericComparator(true) { it2 -> it2.title })
                             menuItem.isChecked = true
                             sortStatus = 0

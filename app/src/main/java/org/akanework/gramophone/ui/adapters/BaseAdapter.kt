@@ -13,8 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.AlphaNumericComparator
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.logic.utils.SupportComparator
 import java.util.Collections
 
 abstract class BaseAdapter<T>(
@@ -142,23 +142,4 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	class SupportComparator<T, U>(private val cmp: Comparator<U>,
-	                              private val invert: Boolean,
-	                              private val convert: (T) -> U)
-		: Comparator<T> {
-		override fun compare(o1: T, o2: T): Int {
-			return cmp.compare(convert(o1), convert(o2)) * (if (invert) -1 else 1)
-		}
-
-		companion object {
-			fun <T> createInversionComparator(cmp: Comparator<T>, invert: Boolean = false):
-					Comparator<T> {
-				return SupportComparator(cmp, invert) { it }
-			}
-
-			fun <T> createAlphanumericComparator(inverted: Boolean = false, converter: (T) -> CharSequence): Comparator<T> {
-				return SupportComparator(AlphaNumericComparator(), inverted) { converter(it).toString() }
-			}
-		}
-	}
 }
