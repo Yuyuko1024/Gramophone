@@ -70,12 +70,36 @@ object MediaStoreUtils {
     /**
      * [Playlist] stores playlist information.
      */
-    data class Playlist(
+    open class Playlist(
         override val id: Long,
         override val title: String,
-        val songList: List<MediaItem>,
+        open val songList: List<MediaItem>,
         val virtual: Boolean
     ) : Item
+
+    class RecentlyPlayed(id: Long, title: String, songList: List<MediaItem>)
+        : Playlist(id, title, songList
+            .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 },
+        true) {
+        private val rawList: List<MediaItem> = super.songList
+        private var filteredList: List<MediaItem>? = null
+        var minAddDate: Long = 0
+            set(value) {
+                if (field != value) {
+                    field = value
+                    filteredList = null
+                }
+            }
+        override val songList: List<MediaItem>
+            get() {
+                if (filteredList == null) {
+                    filteredList = rawList.filter {
+                        (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate
+                    }
+                }
+                return filteredList!!.toMutableList()
+            }
+    }
 
     /**
      * [LibraryStoreClass] collects above metadata classes
@@ -322,14 +346,14 @@ object MediaStoreUtils {
      */
     private fun getPlaylists(context: Context, songList: MutableList<MediaItem>): MutableList<Playlist> {
         val playlists = mutableListOf<Playlist>()
-        val minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60) // TODO setting
-
-        playlists.add(Playlist(-1, context.getString(R.string.recently_added),
-            songList
-                .filter { (it.mediaMetadata.extras?.getLong("AddDate") ?: 0) >= minAddDate }
-                .sortedByDescending { it.mediaMetadata.extras?.getLong("AddDate") ?: 0 }
-                .toMutableList(),
-            true))
+        playlists.add(
+            RecentlyPlayed(-1,
+                context.getString(R.string.recently_added),
+                songList.toMutableList())
+                .apply {
+                    // TODO setting?
+                    minAddDate = (System.currentTimeMillis() / 1000) - (2 * 7 * 24 * 60 * 60)
+                })
 
         // Define the content resolver
         val contentResolver: ContentResolver = context.contentResolver
