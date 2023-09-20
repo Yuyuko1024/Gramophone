@@ -15,6 +15,7 @@ class SongDecorAdapter(
     private val context: Context,
     private var songCount: Int,
     private val songAdapter: SongAdapter,
+    private val canSort: Boolean,
 ) : RecyclerView.Adapter<SongDecorAdapter.ViewHolder>() {
     private var sortStatus = 0
 
@@ -35,6 +36,7 @@ class SongDecorAdapter(
             songCount.toString() + ' ' +
                 if (songCount <= 1) context.getString(R.string.song) else context.getString(R.string.songs)
         holder.songCounter.text = songText
+        if (!canSort) holder.sortButton.visibility = View.GONE else
         holder.sortButton.setOnClickListener {
             val popupMenu = PopupMenu(context, it)
             popupMenu.inflate(R.menu.sort_menu_songs)

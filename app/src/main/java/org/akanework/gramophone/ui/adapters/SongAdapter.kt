@@ -26,8 +26,9 @@ import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 class SongAdapter(
     songList: MutableList<MediaItem>,
     private val mainActivity: MainActivity,
+    canSort: Boolean,
 ) : BaseAdapter<MediaItem>(R.layout.adapter_list_card, songList,
-    SupportComparator.createAlphanumericComparator { it.mediaMetadata.title!! }) {
+    if (canSort) SupportComparator.createAlphanumericComparator { it.mediaMetadata.title!! } else null) {
 
     private val viewModel: LibraryViewModel by mainActivity.viewModels()
     override fun onBindViewHolder(

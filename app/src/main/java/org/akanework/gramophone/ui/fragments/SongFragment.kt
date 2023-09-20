@@ -40,12 +40,13 @@ class SongFragment : BaseFragment(false) {
         songRecyclerView.layoutManager = LinearLayoutManager(activity)
         songList.clear()
         songList.addAll(libraryViewModel.mediaItemList.value!!)
-        songAdapter = SongAdapter(songList, requireActivity() as MainActivity)
+        songAdapter = SongAdapter(songList, requireActivity() as MainActivity, true)
         val songDecorAdapter =
             SongDecorAdapter(
                 requireContext(),
                 libraryViewModel.mediaItemList.value!!.size,
                 songAdapter,
+                true,
             )
         val concatAdapter = ConcatAdapter(songDecorAdapter, songAdapter)
 

@@ -20,7 +20,7 @@ import java.util.Collections
 abstract class BaseAdapter<T>(
 	private val layout: Int,
 	initialList: MutableList<T>,
-	private var sorter: Comparator<T>
+	private var sorter: Comparator<T>?
 ) : RecyclerView.Adapter<BaseAdapter<T>.ViewHolder>() {
 
 	private val rawList = ArrayList<T>(initialList.size)
@@ -71,7 +71,7 @@ abstract class BaseAdapter<T>(
 		newList.sortWith { o1, o2 ->
 			if (isPinned(o1) && !isPinned(o2)) -1
 			else if (!isPinned(o1) && isPinned(o2)) 1
-			else sorter.compare(o1, o2)
+			else sorter?.compare(o1, o2) ?: 0
 		}
 		val apply = updateListSorted(newList)
 		return {
