@@ -38,14 +38,13 @@ class AlbumAdapter(
         holder.itemView.setOnClickListener {
             fragmentManager
                 .beginTransaction()
-                .setReorderingAllowed(true)
                 .addToBackStack("SUBFRAG")
                 .replace(
                     R.id.container,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {
-                                putInt("Position", position)
+                                putInt("Position", toRawPos(position))
                                 putInt("Item", 1)
                                 putString("Title", list[position].title)
                             }

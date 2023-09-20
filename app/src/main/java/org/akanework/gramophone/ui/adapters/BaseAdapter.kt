@@ -27,7 +27,7 @@ abstract class BaseAdapter<T>(
 	protected val list = ArrayList<T>(initialList.size)
 
 	init {
-		updateList(initialList)
+		updateList(initialList, true)
 	}
 
 	inner class ViewHolder(
@@ -39,7 +39,7 @@ abstract class BaseAdapter<T>(
 		val moreButton: MaterialButton = view.findViewById(R.id.more)
 	}
 
-	fun getList(): List<T> {
+	fun getFrozenList(): List<T> {
 		return Collections.unmodifiableList(list)
 	}
 
@@ -92,8 +92,7 @@ abstract class BaseAdapter<T>(
 		}
 	}
 
-	//TODO unhardcode now after fixing threading
-	fun updateList(newList: MutableList<T>, now: Boolean = true) {
+	fun updateList(newList: MutableList<T>, now: Boolean = false) {
 		if (now) sort(newList)()
 		else {
 			CoroutineScope(Dispatchers.Default).launch {
@@ -127,6 +126,10 @@ abstract class BaseAdapter<T>(
 			oldItemPosition: Int,
 			newItemPosition: Int,
 		) = oldList[oldItemPosition] == newList[newItemPosition]
+	}
+
+	protected fun toRawPos(position: Int): Int {
+		return rawList.indexOf(list[position])
 	}
 
 	abstract class ItemAdapter<T : MediaStoreUtils.Item>(layout: Int,

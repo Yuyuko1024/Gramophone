@@ -1,19 +1,11 @@
 package org.akanework.gramophone.ui.adapters
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
@@ -87,7 +79,6 @@ class SongAdapter(
                                     mainActivity
                                         .supportFragmentManager
                                         .beginTransaction()
-                                        .setReorderingAllowed(true)
                                         .addToBackStack("SUBFRAG")
                                         .replace(
                                             R.id.container,
@@ -127,14 +118,12 @@ class SongAdapter(
                                     mainActivity
                                         .supportFragmentManager
                                         .beginTransaction()
-                                        .setReorderingAllowed(true)
                                         .addToBackStack("SUBFRAG")
                                         .replace(
                                             R.id.container,
                                             GeneralSubFragment().apply {
                                                 arguments =
                                                     Bundle().apply {
-                                                        putBoolean("WaitForContainer", true)
                                                         putInt("Position", positionArtist)
                                                         putInt("Item", 2)
                                                         putString(

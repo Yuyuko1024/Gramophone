@@ -73,7 +73,7 @@ class SongFragment : BaseFragment(false) {
     inner class SongPopupTextProvider : PopupTextProvider {
         override fun getPopupText(position: Int): CharSequence {
             if (position != 0) {
-                return songAdapter.getList()[position - 1].mediaMetadata.title?.first().toString()
+                return songAdapter.getFrozenList()[position - 1].mediaMetadata.title?.first().toString()
             }
             return "-"
         }

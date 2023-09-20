@@ -50,15 +50,13 @@ class GenreAdapter(
         holder.itemView.setOnClickListener {
             fragmentManager
                 .beginTransaction()
-                .setReorderingAllowed(true)
                 .addToBackStack("SUBFRAG")
                 .replace(
                     R.id.container,
                     GeneralSubFragment().apply {
                         arguments =
                             Bundle().apply {
-                                putBoolean("WaitForContainer", true)
-                                putInt("Position", position)
+                                putInt("Position", toRawPos(position))
                                 putInt("Item", 3)
                                 putString("Title", holder.title.text as String)
                             }
