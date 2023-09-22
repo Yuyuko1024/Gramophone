@@ -18,12 +18,19 @@ import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import org.akanework.gramophone.MainActivity
 import org.akanework.gramophone.R
 import org.akanework.gramophone.logic.utils.MediaStoreUtils
+import org.akanework.gramophone.ui.adapters.FolderAdapter
+import org.akanework.gramophone.ui.adapters.FolderPopAdapter
 import org.akanework.gramophone.ui.adapters.GenreAdapter
 import org.akanework.gramophone.ui.adapters.GenreDecorAdapter
+import org.akanework.gramophone.ui.adapters.SongAdapter
 import org.akanework.gramophone.ui.viewmodels.LibraryViewModel
 
 class FolderFragment : BaseFragment(false) {
     private val libraryViewModel: LibraryViewModel by activityViewModels()
+    private lateinit var folderAdapter: FolderAdapter
+    private lateinit var songAdapter: SongAdapter
+    private lateinit var decorAdapter: FolderPopAdapter
+    private lateinit var concatAdapter: ConcatAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +38,32 @@ class FolderFragment : BaseFragment(false) {
         savedInstanceState: Bundle?,
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_folder, container, false)
-        if (childFragmentManager.fragments.isEmpty()) {
-            childFragmentManager
-                .beginTransaction()
-                .addToBackStack("BROWSABLE")
-                .replace(R.id.browser, FolderBrowserFragment())
-                .commit()
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerview)
+
+        if (libraryViewModel.folderStructure.value!!.folderList.isNotEmpty()) {
+            songAdapter = SongAdapter(libraryViewModel.folderStructure.value!!.folderList
+                .first().folderList
+                .first().folderList
+                .first().songList,
+                requireActivity() as MainActivity)
+            folderAdapter = FolderAdapter(libraryViewModel.folderStructure.value!!.folderList
+                .first().folderList
+                .first().folderList
+                .first().folderList,
+                libraryViewModel.folderStructure.value!!.folderList
+                    .first().folderList
+                    .first().folderList
+                    .first(),
+                songAdapter)
+            decorAdapter = FolderPopAdapter(folderAdapter)
+        } else {
+            songAdapter = SongAdapter(mutableListOf(), requireActivity() as MainActivity)
+            folderAdapter = FolderAdapter(mutableListOf(), libraryViewModel.folderStructure.value!!, songAdapter)
+            decorAdapter = FolderPopAdapter(folderAdapter)
         }
+        concatAdapter = ConcatAdapter(decorAdapter, folderAdapter, songAdapter)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = concatAdapter
         return rootView
     }
 

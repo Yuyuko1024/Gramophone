@@ -1,17 +1,14 @@
 package org.akanework.gramophone.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import org.akanework.gramophone.R
-import org.akanework.gramophone.logic.utils.MediaStoreUtils
-import org.akanework.gramophone.ui.fragments.FolderBrowserFragment
-import org.akanework.gramophone.ui.fragments.SettingsFragment
 
-class FolderPopAdapter(private val supportFragmentManager: FragmentManager)
+class FolderPopAdapter(private val folderAdapter: FolderAdapter)
     : RecyclerView.Adapter<FolderPopAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderPopAdapter.ViewHolder =
         ViewHolder(
@@ -22,7 +19,14 @@ class FolderPopAdapter(private val supportFragmentManager: FragmentManager)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemView.setOnClickListener {
-            supportFragmentManager.popBackStack()
+            if (folderAdapter.parentNode.size >= 1) {
+                val parentNode = folderAdapter.parentNode.first()
+                folderAdapter.parentNode.pop()
+                Log.d("PARENTNODE", "$parentNode")
+                folderAdapter.updateList(parentNode.folderList)
+                folderAdapter.songAdapter.updateList(parentNode.songList)
+            }
+            Log.d("STRUCT", "${folderAdapter.parentNode}")
         }
     }
 
